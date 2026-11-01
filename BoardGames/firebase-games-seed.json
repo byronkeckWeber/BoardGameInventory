@@ -1,0 +1,59 @@
+{
+  "games": {
+    "g1": {
+      "name": "Catan",
+      "categories": [
+        "Strategy",
+        "Dice"
+      ],
+      "image": "/images/catan.jpg",
+      "rating": 0,
+      "lastPlayed": "",
+      "lastPlayerCount": 0
+    },
+    "g2": {
+      "name": "Ticket to Ride: Germany",
+      "categories": [
+        "Family"
+      ],
+      "image": "/images/ticket-to-ride-germany.jpg",
+      "rating": 5,
+      "lastPlayed": "2025-07-12",
+      "lastPlayerCount": 3
+    },
+    "g3": {
+      "name": "Spirit Island",
+      "categories": [
+        "Strategy",
+        "Co-op",
+        "Complicated"
+      ],
+      "image": "/images/spirit-island.jpg",
+      "rating": 5,
+      "lastPlayed": "2026-05-15",
+      "lastPlayerCount": 2
+    },
+    "g4": {
+      "name": "Betrayal at House on the Hill",
+      "categories": [
+        "Party",
+        "Co-op"
+      ],
+      "image": "/images/betrayal-at-house-on-the-hill.jpg",
+      "rating": 4,
+      "lastPlayed": "2026-10-18",
+      "lastPlayerCount": 4
+    },
+    "g5": {
+      "name": "Dice Throne",
+      "categories": [
+        "Dice",
+        "2 Player"
+      ],
+      "image": "/images/dice-throne.jpg",
+      "rating": 3,
+      "lastPlayed": "2026-09-27",
+      "lastPlayerCount": 2
+    }
+  }
+}
