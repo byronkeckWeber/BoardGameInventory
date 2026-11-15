@@ -15,7 +15,6 @@ const GameFilter = (props) => {
     <Card>
       <div className={styles.title}>
         <h2>Find a Game</h2>
-        <span className={styles.badge}>NEW: Search &amp; Filter</span>
       </div>
       <div className={styles.controls}>
         <input

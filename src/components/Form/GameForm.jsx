@@ -1,13 +1,16 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Card from "../UI/Card";
 import useInput from "../../hooks/useInput";
 import useHttp from "../../hooks/useHttp";
 import { CATEGORIES } from "../../data/categories";
 import { FIREBASE_URL } from "../../firebase-config";
+import { getAuthToken } from "../../utils/auth-utils";
 import styles from "./GameForm.module.css";
 
-const GameForm = (props) => {
+const GameForm = () => {
   const { isLoading, error, sendRequest: postGame } = useHttp();
+  const navigate = useNavigate();
 
   const {
     value: name,
@@ -15,7 +18,6 @@ const GameForm = (props) => {
     hasError: nameHasError,
     valueChangeHandler: nameChangeHandler,
     inputBlurHandler: nameBlurHandler,
-    reset: resetName
   } = useInput((value) => value.trim() !== "");
 
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -41,7 +43,6 @@ const GameForm = (props) => {
     hasError: imageHasError,
     valueChangeHandler: imageChangeHandler,
     inputBlurHandler: imageBlurHandler,
-    reset: resetImage
   } = useInput((value) => value.trim() === "" || value.trim().startsWith("http") || value.trim().startsWith("/"));
 
   let formIsValid = false;
@@ -67,18 +68,13 @@ const GameForm = (props) => {
       lastPlayerCount: 0,
     };
 
-    // Firebase sends back the new id as data.name
-    const handleCreatedGame = (data) => {
-      props.onAddGame({ id: data.name, ...newGame });
-      resetName();
-      setSelectedCategories([]);
-      setCategoriesTouched(false);
-      resetImage();
-      setRating(0);
+    // Once Firebase saves the game, go back to the list where it now shows up
+    const handleCreatedGame = () => {
+      navigate("/");
     };
 
     postGame(
-      `${FIREBASE_URL}/games.json`,
+      `${FIREBASE_URL}/games.json?auth=${getAuthToken()}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

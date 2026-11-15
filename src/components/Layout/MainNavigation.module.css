@@ -1,0 +1,37 @@
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 0.75rem 1rem;
+  background-color: var(--color-primary-dark);
+}
+
+.nav a {
+  color: #d8e4de;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.nav a:hover {
+  color: #f7f1e3;
+}
+
+.nav a.active {
+  color: var(--color-gold);
+}
+
+.nav button {
+  padding: 0.3rem 0.8rem;
+  background: none;
+  border: 1px solid #d8e4de;
+  border-radius: 6px;
+  color: #d8e4de;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.nav button:hover {
+  color: #f7f1e3;
+  border-color: #f7f1e3;
+}

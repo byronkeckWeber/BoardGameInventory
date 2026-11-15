@@ -1,69 +1,59 @@
-import { useState, useEffect } from "react";
-import Header from "./components/Layout/Header";
-import GameForm from "./components/Form/GameForm";
-import GameFilter from "./components/Games/GameFilter";
-import GameList from "./components/Games/GameList";
-import useHttp from "./hooks/useHttp";
-import { FIREBASE_URL } from "./firebase-config";
+import { useEffect } from "react";
+import { createBrowserRouter, RouterProvider, Outlet, useLoaderData, useSubmit } from "react-router-dom";
+import MainNavigation from "./components/Layout/MainNavigation";
+import HomePage from "./pages/HomePage";
+import AddGamePage from "./pages/AddGamePage";
+import AuthenticationPage, { action as authenticationAction } from "./pages/AuthenticationPage";
+import { action as logoutAction } from "./pages/Logout";
+import { tokenLoader, checkAuthLoader, getTokenDuration } from "./utils/auth-utils";
 
-function App() {
-  const [games, setGames] = useState([]);
-  const [filters, setFilters] = useState({ search: "", category: "All" });
-
-  const { isLoading, error, sendRequest: fetchGames } = useHttp();
+function RootLayout() {
+  const token = useLoaderData();
+  const submit = useSubmit();
 
   useEffect(() => {
-    const handleTransformGames = (gamesData) => {
-      const loadedGames = [];
+    if (!token)
+      return;
 
-      for (const key in gamesData) {
-        loadedGames.push({
-          id: key,
-          ...gamesData[key],
-          categories: gamesData[key].categories || [],
-        });
-      }
+    if (token === "EXPIRED") {
+      submit(null, { action: "/logout", method: "post" });
+      return;
+    }
 
-      setGames(loadedGames);
-    };
+    const tokenDuration = getTokenDuration();
 
-    fetchGames(`${FIREBASE_URL}/games.json`, {}, handleTransformGames);
-  }, [fetchGames]);
+    const timer = setTimeout(() => {
+      submit(null, { action: "/logout", method: "post" });
+    }, tokenDuration);
 
-  const addGameHandler = (newGame) => {
-    setGames((prevGames) => [...prevGames, newGame]);
-  };
-
-  const updateGameHandler = (id, changes) => {
-    setGames((prevGames) =>
-      prevGames.map((game) => (game.id === id ? { ...game, ...changes } : game))
-    );
-  };
-
-  const filteredGames = games.filter((game) => {
-    const matchesSearch = game.name.toLowerCase().includes(filters.search.toLowerCase());
-    const matchesCategory =
-      filters.category === "All" || game.categories.includes(filters.category);
-
-    return matchesSearch && matchesCategory;
-  });
+    return () => clearTimeout(timer);
+  }, [token, submit]);
 
   return (
     <>
-      <Header gameCount={games.length} />
-      <main>
-        <GameFilter filters={filters} onChangeFilters={setFilters} />
-
-        {isLoading && <p className="message">Loading games...</p>}
-        {error && <p className="message error">{error}</p>}
-        {!isLoading && !error && (
-          <GameList games={filteredGames} onUpdateGame={updateGameHandler} />
-        )}
-
-        <GameForm onAddGame={addGameHandler} />
-      </main>
+      <MainNavigation />
+      <Outlet />
     </>
   );
+}
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <RootLayout />,
+    id: "root",
+    loader: tokenLoader,
+    children: [
+      { index: true, element: <HomePage /> },
+      { path: "authentication", element: <AuthenticationPage />, action: authenticationAction },
+      { path: "add-game", element: <AddGamePage />, loader: checkAuthLoader },
+      { path: "logout", action: logoutAction },
+    ],
+  },
+]);
+
+function App() {
+  return <RouterProvider router={router} />;
 }
 
 export default App;

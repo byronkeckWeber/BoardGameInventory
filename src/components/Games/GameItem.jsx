@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { useRouteLoaderData } from "react-router-dom";
 import CategoryTag from "./CategoryTag";
 import useHttp from "../../hooks/useHttp";
 import useInput from "../../hooks/useInput";
 import { FIREBASE_URL } from "../../firebase-config";
+import { getAuthToken } from "../../utils/auth-utils";
 import styles from "./GameItem.module.css";
 
 const today = new Date().toLocaleDateString("en-CA");
@@ -23,6 +25,7 @@ const formatDate = (dateString) => {
 };
 
 const GameItem = (props) => {
+  const token = useRouteLoaderData("root");
   const [isLogging, setIsLogging] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
   const { isLoading, error, sendRequest: patchGame } = useHttp();
@@ -48,7 +51,7 @@ const GameItem = (props) => {
   // Saves the changes to Firebase, then updates the list on screen
   const updateGame = (changes, onSaved) => {
     patchGame(
-      `${FIREBASE_URL}/games/${props.id}.json`,
+      `${FIREBASE_URL}/games/${props.id}.json?auth=${getAuthToken()}`,
       {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -134,7 +137,7 @@ const GameItem = (props) => {
             : "Never"}
         </p>
 
-        {!isLogging && (
+        {token && !isLogging && (
           <button type="button" className={styles.logButton} onClick={() => setIsLogging(true)}>
             Log a play
           </button>
